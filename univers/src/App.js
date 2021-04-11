@@ -32,7 +32,6 @@ class App extends Component {
     fetch(API + IDX_QUERY)
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         var idx = lunr.Index.load(data);
         fetch(API + DATA_QUERY)
           .then(response => response.json())
@@ -99,7 +98,7 @@ const Search = (props) => {
       {results.map(result => {
         const position = raw_data[result.ref];
         return (
-          <Result key={position.ID} position={position} />
+          <Result key={position.ID} position={position} score={result.score} metadata={result.matchData.metadata} />
         )
       })}
       {results && results.length === 0 &&
@@ -140,7 +139,7 @@ const SearchInfo = () => {
 };
 
 const Result = (props) => {
-  const { position } = props;
+  const { position, score, metadata } = props;
   return (
     <Card >
       <Card.Body>
@@ -151,6 +150,9 @@ const Result = (props) => {
         </Card.Subtitle>
         <Card.Text>
           {position["Profil"]}
+        </Card.Text>
+        <Card.Text className="mb-2 text-muted">
+          {Object.getOwnPropertyNames(metadata).map(key => { return "\"" + key + "\" présent dans : " + Object.getOwnPropertyNames(metadata[key]).join(", ") + " ; "; })}
         </Card.Text>
       </Card.Body>
     </Card>
