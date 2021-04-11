@@ -82,7 +82,7 @@ for columns, row in df.iterrows():
     new_row = defaultdict(lambda: set())
     for new_label, old_labels in labels.items():
         for old_label in old_labels:
-            if not pd.isna(row[old_label]) and row[old_label]:
+            if old_label in row and not pd.isna(row[old_label]) and row[old_label]:
                 new_row[new_label].add(row[old_label])
 
     flatten_row = {}
@@ -125,6 +125,13 @@ async def main(df):
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main(df))
 loop.close()
+
+custom_stop_words = {
+    "heure de Paris",
+}
+
+for stop_word in custom_stop_words:
+    df['pdf_content'] = df['pdf_content'].str.replace(stop_word, "")
 
 df['pdf_content'] = df['pdf_content'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 

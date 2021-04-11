@@ -14,7 +14,7 @@ import lunr from "lunr";
 const API = '';
 const DATA_QUERY = 'output.json';
 const IDX_QUERY = 'index.json';
-const re = new RegExp(/[+-]+($|\s)/);
+const re = new RegExp(/[\s*+-]+($|\s)/);
 
 class App extends Component {
   constructor(props) {
@@ -112,6 +112,19 @@ const Search = (props) => {
 const SearchInfo = () => {
   return (
     <Container className='mt-5'>
+      <Alert variant="info">
+        Ce site web permet de rechercher dans les postes et fiches de postes publiés sur Galaxie. La base de données est mise à jour toutes les 6 heures. On peut par exemple rechercher…
+         <ul>
+          <li>… les postes d'ATER ou de PRAG à Lyon en Informatique: PRAG ATER +Lyon +Informatique</li>
+          <li>… les postes de géographie qui ne sont pas à Paris: géographie -paris</li>
+          <li>… les postes de mathématiques qui n'ont pas de lien avec l'informatique: mathématiques -informatique</li>
+        </ul>
+      </Alert>
+      <Alert variant="warning">
+        <ul>
+          <li>La recherche s'effectue sur des mots complets ! Ainsi, chercher " infor " ne permettra pas de trouver " informatique ": il faut utiliser un joker et chercher " infor* " ou rechercher l'expression complète " informatique ".</li>
+        </ul>
+      </Alert>
       <Alert variant="primary">
         Techniques de recherche:
           <ul>
@@ -119,16 +132,6 @@ const SearchInfo = () => {
           <li>Le caractère * représente un joker. Par exemple, pour rechercher les mots commençant par Info: Info*</li>
           <li>+terme : force la présence du terme dans les résultats. Par exemple: +ATER</li>
           <li>-terme : empêche la présence du terme dans les résultats. Par exemple: -PRAG/PRCE</li>
-        </ul>
-      </Alert>
-      <Alert variant="warning">
-        La recherche s'effectue sur des mots complets ! Ainsi, chercher " infor " ne permettra pas de trouver " informatique ": il faut utiliser un joker et chercher " infor* ".
-      </Alert>
-      <Alert variant="info">
-        Exemple de recherches:
-          <ul>
-          <li>Rechercher les postes d'ATER à Lyon en Informatique: +ATER +Lyon +Informatique</li>
-          <li>Rechercher les postes à Lille ou à Nancy: Lille Nancy</li>
         </ul>
       </Alert>
     </Container>
