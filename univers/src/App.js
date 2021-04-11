@@ -14,7 +14,7 @@ import lunr from "lunr";
 const API = '';
 const DATA_QUERY = 'output.json';
 const IDX_QUERY = 'index.json';
-const re = new RegExp(/[\s*+-]+($|\s)/);
+const re = new RegExp(/(\W|^)[*+-](\W|$)/);
 
 class App extends Component {
   constructor(props) {
