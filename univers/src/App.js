@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import preval from 'preval.macro'
 import FormControl from 'react-bootstrap/FormControl';
 import Container from 'react-bootstrap/Container';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -133,7 +134,7 @@ const SearchInfo = () => {
           <li>-terme : empêche la présence du terme dans les résultats. Par exemple: -PRAG/PRCE</li>
         </ul>
       </Alert>
-      Dernière mise à jour: {document.lastModified}
+      Dernière mise à jour: {preval`module.exports = new Date().toLocaleString();`}.
     </Container>
   )
 };
