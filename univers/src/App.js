@@ -121,6 +121,9 @@ const SearchInfo = () => {
           <li>-terme : empêche la présence du terme dans les résultats. Par exemple: -PRAG/PRCE</li>
         </ul>
       </Alert>
+      <Alert variant="warning">
+        La recherche s'effectue sur des mots complets ! Ainsi, chercher " infor " ne permettra pas de trouver " informatique ": il faut utiliser un joker et chercher " infor* ".
+      </Alert>
       <Alert variant="info">
         Exemple de recherches:
           <ul>
