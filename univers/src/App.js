@@ -81,7 +81,6 @@ const Search = (props) => {
     <div>
       <Navbar bg="light" expand="lg">
         <Navbar.Brand href="#home">Recherche :</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Form inline onSubmit={e => { e.preventDefault(); }}>
           <FormControl
             type="text"
@@ -134,6 +133,7 @@ const SearchInfo = () => {
           <li>-terme : empêche la présence du terme dans les résultats. Par exemple: -PRAG/PRCE</li>
         </ul>
       </Alert>
+      Dernière mise à jour: {document.lastModified}
     </Container>
   )
 };
