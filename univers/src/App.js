@@ -1,4 +1,4 @@
-import React, { Component, useState, useCallback } from 'react';
+import React, { Component, useState, useEffect, useCallback } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import Navbar from 'react-bootstrap/Navbar';
@@ -12,6 +12,15 @@ import 'react-virtualized/styles.css';
 import './App.css';
 import lunr from "lunr";
 import debounce from 'lodash.debounce';
+import queryString from 'query-string';
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+  useLocation
+} from "react-router-dom";
 
 const API = '';
 const DATA_QUERY = 'output.json';
@@ -21,7 +30,6 @@ const re = new RegExp(/(\W|^)[*+-](\W|$)|:/);
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       raw_data: [],
       idx: null,
@@ -53,30 +61,53 @@ class App extends Component {
       )
     } else {
       return (
-
-        <div className="App">
-          <Container fluid>
-            <Search idx={idx} raw_data={raw_data} />
-          </Container>
-        </div>
+        <Router>
+          <div>
+            <Switch>
+              <Route path="/">
+                <div className="App">
+                  <Container fluid>
+                    <Search idx={idx} raw_data={raw_data} />
+                  </Container>
+                </div>
+              </Route>
+            </Switch>
+          </div>
+        </Router>
       );
     }
   }
 }
 
-
 const Search = (props) => {
+  const location = useLocation();
+  let params = queryString.parse(location.search);
   const { idx, raw_data } = props;
-  const [query, setQuery] = useState(null);
+  const [query, setQuery] = useState(params.search);
+  const [input, setInput] = useState(params.search);
+  const history = useHistory()
   var invalid = false;
   var results = [];
 
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (query) {
+      params.append("search", query)
+    } else {
+      params.delete("search");
+    }
+    history.push({ search: params.toString() })
+  }, [query, history])
+
   const debouncedSearch = useCallback(
-    debounce(nextValue => setQuery(nextValue), 250),
+    debounce(nextValue => {
+      return setQuery(nextValue);
+    }, 250),
     [],
   );
 
   const handleChange = event => {
+    setInput(event.target.value);
     const { value: nextValue } = event.target;
     debouncedSearch(nextValue);
   };
@@ -101,6 +132,7 @@ const Search = (props) => {
           <FormControl
             type="text"
             placeholder="Tapez ici les mots-clefs recherchés…"
+            value={input}
             onChange={handleChange}
             isInvalid={invalid} />
           <Form.Control.Feedback type="invalid">
@@ -136,12 +168,13 @@ const SearchInfo = () => {
       <Alert variant="warning">
         <ul>
           <li>La recherche s'effectue sur des mots complets ! Ainsi, chercher " infor " ne permettra pas de trouver " informatique ": il faut utiliser un joker et chercher " infor* " ou rechercher l'expression complète " informatique ".</li>
+          <li>Pour l'instant, seuls les postes listés sur Galaxie sont pris en compte dans ce moteur de recherche.</li>
         </ul>
       </Alert>
       <Alert variant="primary">
         Techniques de recherche:
           <ul>
-          <li>terme1 terme2 : cherche les résultats qui contiennent terme1 ou terme2. Par exemple: Lyon Paris</li>
+          <li>terme1 terme2 : cherche les résultats qui contiennent terme1 <b>ou</b> terme2. Par exemple: Lyon Paris</li>
           <li>Le caractère * représente un joker. Par exemple, pour rechercher les mots commençant par Info: Info*</li>
           <li>+terme : force la présence du terme dans les résultats. Par exemple: +ATER</li>
           <li>-terme : empêche la présence du terme dans les résultats. Par exemple: -PRAG/PRCE</li>
