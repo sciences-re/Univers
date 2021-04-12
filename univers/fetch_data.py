@@ -58,6 +58,19 @@ with open('raw_output.json', 'w') as f:
     f.write(df.to_json(orient='records'))
 # Data Cleaning
 
+short_labels = {
+    "Établissement": "Établissement",
+    "Sections": "Sections",
+    "Corps": "Corps",
+    "Type de poste": "Type",
+    "Date de prise de fonction": "Prise",
+    "Ouverture des candidatures": "Ouverture",
+    "Fermeture des candidatures": "Fermeture",
+    "Localisation du poste": "Localisation",
+    "URL": "URL",
+    "Profil": "Profil",
+}
+
 labels = {
     "Établissement": ["Etablissement", "Etab"],
     "Sections": ["Section", "Section2", "Section3", "Sec1", "Sec2", "Sec3", "Sec4", "Sec5", "Sec6"],
@@ -83,7 +96,7 @@ for columns, row in df.iterrows():
     for new_label, old_labels in labels.items():
         for old_label in old_labels:
             if old_label in row and not pd.isna(row[old_label]) and row[old_label]:
-                new_row[new_label].add(row[old_label])
+                new_row[short_labels[new_label]].add(row[old_label])
 
     flatten_row = {}
     for label, values in new_row.items():
@@ -115,7 +128,7 @@ async def process_url(df, url):
         pdf_file = BytesIO(content)
         extract_text_to_fp(pdf_file, output_string)
         print(url)
-        df.loc[df['URL'] == url, ['Fiche de poste']] = output_string.getvalue().lower()
+        df.loc[df['URL'] == url, ['Fiche']] = output_string.getvalue().lower()
         output_string.close()
         pdf_file.close()
 
@@ -131,10 +144,10 @@ custom_stop_words = {
 }
 
 for stop_word in custom_stop_words:
-    df['Fiche de poste'] = df['Fiche de poste'].str.replace(stop_word, "")
+    df['Fiche'] = df['Fiche'].str.replace(stop_word, "")
 
 # TODO: find a better way to filter out stop words
-df['Fiche de poste'] = df['Fiche de poste'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
+df['Fiche'] = df['Fiche'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 
 with open('output.json', 'w') as f:
     f.write(df.to_json(orient='records'))
