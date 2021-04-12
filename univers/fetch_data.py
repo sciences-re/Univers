@@ -115,7 +115,7 @@ async def process_url(df, url):
         pdf_file = BytesIO(content)
         extract_text_to_fp(pdf_file, output_string)
         print(url)
-        df.loc[df['URL'] == url, ['Fiche de poste']] = output_string.getvalue()
+        df.loc[df['URL'] == url, ['Fiche de poste']] = output_string.getvalue().lower()
         output_string.close()
         pdf_file.close()
 
@@ -134,7 +134,7 @@ for stop_word in custom_stop_words:
     df['Fiche de poste'] = df['Fiche de poste'].str.replace(stop_word, "")
 
 # TODO: find a better way to filter out stop words
-# df['Fiche de poste'] = df['Fiche de poste'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
+df['Fiche de poste'] = df['Fiche de poste'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 
 with open('output.json', 'w') as f:
     f.write(df.to_json(orient='records'))

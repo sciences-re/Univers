@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useCallback } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import Navbar from 'react-bootstrap/Navbar';
@@ -11,11 +11,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-virtualized/styles.css';
 import './App.css';
 import lunr from "lunr";
+import debounce from 'lodash.debounce';
 
 const API = '';
 const DATA_QUERY = 'output.json';
 const IDX_QUERY = 'index.json';
-const re = new RegExp(/(\W|^)[*+-](\W|$)/);
+const re = new RegExp(/(\W|^)[*+-](\W|$)|:/);
 
 class App extends Component {
   constructor(props) {
@@ -69,11 +70,26 @@ const Search = (props) => {
   const [query, setQuery] = useState(null);
   var invalid = false;
   var results = [];
+
+  const debouncedSearch = useCallback(
+    debounce(nextValue => setQuery(nextValue), 250),
+    [],
+  );
+
+  const handleChange = event => {
+    const { value: nextValue } = event.target;
+    debouncedSearch(nextValue);
+  };
+
   if (query) {
     if (re.test(query)) {
       invalid = true;
     } else {
-      results = idx.search(query);
+      try {
+        results = idx.search(query);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
@@ -85,9 +101,7 @@ const Search = (props) => {
           <FormControl
             type="text"
             placeholder="Tapez ici les mots-clefs recherchés…"
-            onChange={(event) => {
-              setQuery(event.target.value);
-            }}
+            onChange={handleChange}
             isInvalid={invalid} />
           <Form.Control.Feedback type="invalid">
             La recherche est invalide ! Pour forcer ou empêcher un terme à apparaitre: "+terme" ou "-terme". Wildcard: *
