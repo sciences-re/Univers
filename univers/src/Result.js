@@ -13,7 +13,9 @@ class Result extends Component {
                     <Card.Title>{position["Type"]} - {position["Établissement"]}<Button variant="primary" className="float-right" href={position["URL"]}>Ouvrir la fiche de poste</Button></Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">
                         {position["Corps"] && position["Corps"] + " - "}
-                        {position["Localisation"]}
+                        {position["Localisation"] && position["Localisation"] + " - "}
+                        {position["Ouverture"] && "Ouverture des candidatures : " + position["Ouverture"] + " → "}
+                        {position["Fermeture"] && "Fermeture des candidatures : " + position["Fermeture"]}
                     </Card.Subtitle>
                     <Card.Text>
                         {position["Profil"]}

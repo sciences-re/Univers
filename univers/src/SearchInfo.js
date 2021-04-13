@@ -17,7 +17,7 @@ const SearchInfo = () => {
       <Alert variant="warning">
         <ul>
           <li>La recherche s'effectue sur des mots complets ! Ainsi, chercher " infor " ne permettra pas de trouver " informatique ": il faut utiliser un joker et chercher " infor* " ou rechercher l'expression complète " informatique ".</li>
-          <li>Pour l'instant, seuls les postes listés sur Galaxie sont pris en compte dans ce moteur de recherche.</li>
+          <li>Pour l'instant, seuls les postes <b>actuellement listés</b> sur Galaxie sont pris en compte dans ce moteur de recherche.</li>
         </ul>
       </Alert>
       <Alert variant="primary">
