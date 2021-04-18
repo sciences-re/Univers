@@ -8,7 +8,7 @@ import Result from './Result';
 import SearchInfo from './SearchInfo';
 
 // Fugly regex to detect incorrect searchs
-const re = new RegExp(/([^A-zÀ-ú]|^)[*+-]([^A-zÀ-ú]|$)|([^A-zÀ-ú]:)|(:[^A-zÀ-ú])/);
+const re = new RegExp(/([^A-zÀ-ú]|^)[*+-]([^A-zÀ-ú0-9]|$)|([^A-zÀ-ú]:)|(:[^0-9A-zÀ-ú])/);
 
 
 const Search = React.memo(function Search(props) {

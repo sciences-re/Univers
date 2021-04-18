@@ -122,7 +122,15 @@ async def gather_with_concurrency(n, *tasks):
 
 async def process_url(df, url):
     async with aiohttp.ClientSession() as session:
-        resp = await session.get(url)
+        for attempt in range(0,5):
+            try:
+                resp = await session.get(url)
+            except aiohttp.client_exceptions.ClientConnectorError:
+                continue
+            break
+        else:
+            print(f"Could not fetch {url}, skipping.")
+            return
         content = await resp.read()
         output_string = StringIO()
         pdf_file = BytesIO(content)
