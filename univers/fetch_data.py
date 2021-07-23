@@ -141,6 +141,7 @@ async def process_url(df, url):
         pdf_file.close()
 
 async def main(df):
+    print(df.head())
     await gather_with_concurrency(20, (*[process_url(df, url) for url in df['URL']]))
 
 loop = asyncio.get_event_loop()
