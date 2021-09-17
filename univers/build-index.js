@@ -4,17 +4,17 @@ var lunr = require('lunr'),
 	buffer = []
 
 const columns = [
-	  { field: "Type de poste", headerName: "Type de poste", formatter: x => x },
+	  { field: "Type", headerName: "Type de poste", formatter: x => x },
 	  { field: "Sections", headerName: "Section(s)", formatter: x => x },
 	  { field: "Établissement", headerName: "Établissement", formatter: x => x },
-	  { field: "Localisation du poste", headerName: "Localisation", formatter: x => x },
+	  { field: "Localisation", headerName: "Localisation", formatter: x => x },
 	  { field: "Corps", headerName: "Corps", formatter: x => x },
-	  { field: "Date de prise de fonction", headerName: "Date de prise de fonction", formatter: x => x },
-	  { field: "Ouverture des candidatures", headerName: "Ouverture des candidatures", formatter: x => x },
-	  { field: "Fermeture des candidatures", headerName: "Fermeture des candidatures", formatter: x => x },
+	  { field: "Prise", headerName: "Date de prise de fonction", formatter: x => x },
+	  { field: "Ouverture", headerName: "Ouverture des candidatures", formatter: x => x },
+	  { field: "Fermeture", headerName: "Fermeture des candidatures", formatter: x => x },
 	  { field: "URL", headerName: "URL", formatter: x => x},
 	  { field: "Profil", headerName: "Profil", formatter: x => x },
-	  { field: "Fiche de poste", headerName: "Contenu du PDF", formatter: x => x }
+	  { field: "Fiche", headerName: "Fiche de poste", formatter: x => x }
 ];
 
 stdin.resume()

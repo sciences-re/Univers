@@ -7,6 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import urllib.request
 from pdfminer.high_level import extract_text_to_fp
+from pdfminer.pdfparser import PDFSyntaxError
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize 
 import asyncio
@@ -58,6 +59,19 @@ with open('raw_output.json', 'w') as f:
     f.write(df.to_json(orient='records'))
 # Data Cleaning
 
+short_labels = {
+    "Établissement": "Établissement",
+    "Sections": "Sections",
+    "Corps": "Corps",
+    "Type de poste": "Type",
+    "Date de prise de fonction": "Prise",
+    "Ouverture des candidatures": "Ouverture",
+    "Fermeture des candidatures": "Fermeture",
+    "Localisation du poste": "Localisation",
+    "URL": "URL",
+    "Profil": "Profil",
+}
+
 labels = {
     "Établissement": ["Etablissement", "Etab"],
     "Sections": ["Section", "Section2", "Section3", "Sec1", "Sec2", "Sec3", "Sec4", "Sec5", "Sec6"],
@@ -83,7 +97,7 @@ for columns, row in df.iterrows():
     for new_label, old_labels in labels.items():
         for old_label in old_labels:
             if old_label in row and not pd.isna(row[old_label]) and row[old_label]:
-                new_row[new_label].add(row[old_label])
+                new_row[short_labels[new_label]].add(row[old_label])
 
     flatten_row = {}
     for label, values in new_row.items():
@@ -109,21 +123,30 @@ async def gather_with_concurrency(n, *tasks):
 
 async def process_url(df, url):
     async with aiohttp.ClientSession() as session:
-        resp = await session.get(url)
+        for attempt in range(0,5):
+            try:
+                resp = await session.get(url)
+            except aiohttp.client_exceptions.ClientConnectorError:
+                continue
+            break
+        else:
+            print(f"Could not fetch {url}, skipping.")
+            return
         content = await resp.read()
         output_string = StringIO()
         pdf_file = BytesIO(content)
         try:
             print(url)
             extract_text_to_fp(pdf_file, output_string)
-            df.loc[df['URL'] == url, ['Fiche de poste']] = output_string.getvalue().lower()
-        except pdfminer.pdfparser.PDFSyntaxError:
-            print(f"Error dealing with {url}, skipping it")
-            continue
+            df.loc[df['URL'] == url, ['Fiche']] = output_string.getvalue().lower()
+        except PDFSyntaxError:
+            print(f"Error dealing with {url}, skipping it.")
+            df.loc[df['URL'] == url, ['Fiche']] = ""
         output_string.close()
         pdf_file.close()
 
 async def main(df):
+    print(df.head())
     await gather_with_concurrency(20, (*[process_url(df, url) for url in df['URL']]))
 
 loop = asyncio.get_event_loop()
@@ -135,10 +158,10 @@ custom_stop_words = {
 }
 
 for stop_word in custom_stop_words:
-    df['Fiche de poste'] = df['Fiche de poste'].str.replace(stop_word, "")
+    df['Fiche'] = df['Fiche'].str.replace(stop_word, "")
 
 # TODO: find a better way to filter out stop words
-df['Fiche de poste'] = df['Fiche de poste'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
+df['Fiche'] = df['Fiche'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 
 with open('output.json', 'w') as f:
     f.write(df.to_json(orient='records'))
