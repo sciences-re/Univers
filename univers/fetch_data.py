@@ -113,9 +113,13 @@ async def process_url(df, url):
         content = await resp.read()
         output_string = StringIO()
         pdf_file = BytesIO(content)
-        extract_text_to_fp(pdf_file, output_string)
-        print(url)
-        df.loc[df['URL'] == url, ['Fiche de poste']] = output_string.getvalue().lower()
+        try:
+            print(url)
+            extract_text_to_fp(pdf_file, output_string)
+            df.loc[df['URL'] == url, ['Fiche de poste']] = output_string.getvalue().lower()
+        except pdfminer.pdfparser.PDFSyntaxError:
+            print(f"Error dealing with {url}, skipping it")
+            continue
         output_string.close()
         pdf_file.close()
 
