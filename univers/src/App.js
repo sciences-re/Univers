@@ -8,7 +8,7 @@ import lunr from "lunr";
 import Search from "./Search";
 import {
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
   useHistory,
   useLocation
@@ -54,17 +54,17 @@ class App extends Component {
       return (
         <Router>
           <div>
-            <Switch>
-              <Route path="/">
+            <Routes>
+              <Route path="/postes/" element={
                 <div className="App">
                   <Container fluid>
                     <Search idx={idx} raw_data={raw_data} />
                   </Container>
                 </div>
-              </Route>
-            </Switch>
-          </div>
-        </Router>
+              } />
+          </Routes>
+        </div>
+        </Router >
       );
     }
   }

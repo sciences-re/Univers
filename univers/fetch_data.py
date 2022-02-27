@@ -147,7 +147,7 @@ async def process_url(df, url):
 
 async def main(df):
     print(df.head())
-    await gather_with_concurrency(20, (*[process_url(df, url) for url in df['URL']]))
+    await gather_with_concurrency(20, *[process_url(df, url) for url in df['URL']])
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main(df))

@@ -48,7 +48,7 @@ const Search = React.memo(function Search(props) {
         <div>
             <Navbar bg="light" expand="lg">
                 <Navbar.Brand>Recherche :</Navbar.Brand>
-                <Form inline onSubmit={e => { e.preventDefault(); }}>
+                <Form inline="true" onSubmit={e => { e.preventDefault(); }}>
                     <FormControl
                         type="text"
                         placeholder="Tapez ici les mots-clefs recherchés…"
