@@ -10,7 +10,7 @@ class Result extends Component {
         return (
             <Card >
                 <Card.Body>
-                    <Card.Title>{position["Type"]} - {position["Établissement"]}<Button variant="primary" className="float-right" href={position["URL"]}>Ouvrir la fiche de poste</Button></Card.Title>
+                    <Card.Title>{position["Type"]} - {position["Établissement"]}<Button variant="primary" className="float-end" href={position["URL"]}>Ouvrir la fiche de poste</Button></Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">
                         {position["Corps"] && position["Corps"] + " - "}
                         {position["Localisation"] && position["Localisation"] + " - "}

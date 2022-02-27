@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useCallback } from 'react';
+import React, { Component } from 'react';
 
 import Container from 'react-bootstrap/Container';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,8 +10,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useHistory,
-  useLocation
 } from "react-router-dom";
 
 const API = '';
@@ -62,8 +60,8 @@ class App extends Component {
                   </Container>
                 </div>
               } />
-          </Routes>
-        </div>
+            </Routes>
+          </div>
         </Router >
       );
     }
