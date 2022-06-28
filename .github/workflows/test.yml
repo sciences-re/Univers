@@ -1,5 +1,11 @@
 name: "Test"
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
   push:
   schedule:
     - cron:  '0 */6 * * *'
