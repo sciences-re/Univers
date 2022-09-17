@@ -37,5 +37,5 @@ jobs:
         echo "${{secrets.POSTES_DEPLOY_PRIVATE_KEY}}" > deploy_key
         chmod 600 ./deploy_key
         rsync -chav --delete \
-        -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
+        -e 'ssh -4 -p 2102 -i ./deploy_key -o StrictHostKeyChecking=no' \
         ./univers/build/ ${{env.dest}}
