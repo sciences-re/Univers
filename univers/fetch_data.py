@@ -70,6 +70,7 @@ short_labels = {
     "Localisation du poste": "Localisation",
     "URL": "URL",
     "Profil": "Profil",
+    "Article": "Article",
 }
 
 labels = {
@@ -82,7 +83,8 @@ labels = {
     "Fermeture des candidatures": ["Date cl\u00f4ture cand", "DateClo.Cand."],
     "Localisation du poste": ["Localisation", "Localisation\u00a0 appel \u00e0 candidatures"],
     "URL": ["R\u00e9f\u00e9rence GALAXIE", "NAppel \u00e0candidatures"],
-    "Profil": ["Profil", "Profil\u00a0Appel \u00e0 candidatures"]
+    "Profil": ["Profil", "Profil\u00a0Appel \u00e0 candidatures"],
+    "Article": ["Article"],
 }
 
 reverse_labels = {}

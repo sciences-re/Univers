@@ -14,7 +14,8 @@ const columns = [
 	  { field: "Fermeture", headerName: "Fermeture des candidatures", formatter: x => x },
 	  { field: "URL", headerName: "URL", formatter: x => x},
 	  { field: "Profil", headerName: "Profil", formatter: x => x },
-	  { field: "Fiche", headerName: "Fiche de poste", formatter: x => x }
+	  { field: "Fiche", headerName: "Fiche de poste", formatter: x => x },
+	  { field: "Article", headerName: "Article", formatter: x => x }
 ];
 
 stdin.resume()
