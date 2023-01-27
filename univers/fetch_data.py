@@ -16,8 +16,10 @@ import aiohttp
 stop_words = set(stopwords.words('french'))
 
 URLS = {
-    "Enseignants chercheurs": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_TrieParCorps.html",
+    "Enseignants chercheurs":                  "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_TrieParCorps.html",
+    "Enseignants chercheurs - prépublication": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_prepublies_TrieParCorps.html",
     "Enseignants chercheurs du Muséum national d'histoire naturelle": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_Museum_TrieParCorps.html",
+    "Enseignants chercheurs du Muséum national d'histoire naturelle - prépublication": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_prepublies_Museum_TrieParCorps.html",
     "ATER": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ATERListesOffresPubliees/ATEROffres_publiees_TriParSection.html",
     "PRAG/PRCE": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_2nd_TrieParDiscipline.html"
 }
