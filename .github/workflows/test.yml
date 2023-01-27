@@ -14,20 +14,22 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.4
-    - uses: cachix/install-nix-action@v13
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=channel:nixos-22.11
     - name: Install dependencies
-      run: nix-shell --pure --run "cd univers && yarn install"
-    - name: Build website
-      run: nix-shell --pure --run "cd univers && yarn build"
+      run: nix develop --command bash -c "cd univers && yarn install"
     - name: Fetch data
-      run: nix-shell --pure --run "cd univers && yarn update_data"
+      run: nix develop --command bash -c "cd univers && yarn update_data"
     - name: Generate the search index
-      run: nix-shell --pure --run "cd univers && yarn generate_index"
+      run: nix develop --command bash -c "cd univers && yarn generate_index"
+    - name: Rename files
+      run: nix develop --command bash -c "cd univers && yarn rename_files"
+    - name: Build website
+      run: nix develop --command bash -c "cd univers && yarn build"
     - name: Copy files
-      run: cp univers/{output,index}.json univers/build/
+      run: cp univers/{output,index}.*.json univers/build/
     - name: List results
       run: ls -alhR univers/build/
     - name: Push files to server

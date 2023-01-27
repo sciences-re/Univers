@@ -26,6 +26,7 @@
     "start": "react-scripts start",
     "update_data": "./fetch_data.py",
     "generate_index": "node build-index.js < output.json > index.json",
+    "rename_files": "./rename-files.sh",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
