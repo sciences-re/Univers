@@ -14,6 +14,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
+    - name: fr_FR.UTF-8
+      run: |
+          sudo locale-gen fr_FR.UTF-8
+          sudo update-locale LANG=fr_FR.UTF-8
     - uses: actions/checkout@v3
     - uses: cachix/install-nix-action@v18
       with:
