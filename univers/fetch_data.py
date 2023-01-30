@@ -12,21 +12,11 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize 
 import asyncio
 import aiohttp
+from urllib.parse import urlparse
+import json
+import time
 
-stop_words = set(stopwords.words('french'))
-
-URLS = {
-    "Enseignants chercheurs": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_TrieParCorps.html",
-    "Enseignants chercheurs - prépublication": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_prepublies_TrieParCorps.html",
-    "Enseignants chercheurs du Muséum national d'histoire naturelle": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_Museum_TrieParCorps.html",
-    "Enseignants chercheurs du Muséum national d'histoire naturelle - prépublication": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_prepublies_Museum_TrieParCorps.html",
-    "ATER": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ATERListesOffresPubliees/ATEROffres_publiees_TriParSection.html",
-    "PRAG/PRCE": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_2nd_TrieParDiscipline.html"
-}
-
-all_dfs = []
-
-for key, url in URLS.items():
+def download_galaxie(url):
     with urllib.request.urlopen(url) as f:
         html = f.read().decode('utf-8')
     soup = BeautifulSoup(html, features="lxml")
@@ -53,7 +43,66 @@ for key, url in URLS.items():
     local_df = local_df[1:]
     local_df.columns = header
     local_df['Type de poste'] = key
-    all_dfs.append(local_df)
+    return local_df
+
+def download_imt(url):
+    with urllib.request.urlopen(url) as f:
+        html = f.read().decode('utf-8')
+    soup = BeautifulSoup(html, features="lxml")
+    rows = []
+    job_rows = soup.find_all('a', attrs={'class': 'job__row'})
+    for job_row in job_rows:
+        job_href = urlparse(url)._replace(path=job_row['href']).geturl()
+        if not ("maitre" in job_href or "professeur" in job_href):
+            continue
+        print(job_href)
+        job_data = job_row.find('div', attrs={'class': 'job-data'})
+        keys = {'department', 'city', 'state', 'country', 'language', 'tag'}
+        values = {}
+        for key in keys:
+            values[key] = job_data.find('div', attrs={'class': key}).text.strip()
+
+        with urllib.request.urlopen(job_href) as f:
+            html = f.read().decode('utf-8')
+        soup = BeautifulSoup(html, features="lxml")
+
+        application_data = soup.find('script', {'type':'application/ld+json'})
+        try:
+            data = json.loads("".join(application_data.contents))
+            row = {}
+            desc = BeautifulSoup(data['description'], features="lxml")
+            row['Type de poste'] = "Enseignants chercheurs contractuels"
+            row['Fiche'] = desc.text.lower()
+            row['Établissement'] = values['tag'].strip("[]\"")
+            row['Ouverture des candidatures'] = data['datePosted']
+            row['Localisation du poste'] = data['jobLocation']['address']['addressLocality']
+            row['Profil'] = data['title']
+            row['URL'] = job_href
+            rows.append(row)
+        except AttributeError:
+            print(f"Error with {job_href}")
+    return rows
+
+
+
+stop_words = set(stopwords.words('french'))
+
+GALAXIE_URLS = {
+    "Enseignants chercheurs": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_TrieParCorps.html",
+    "Enseignants chercheurs - prépublication": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_prepublies_TrieParCorps.html",
+    "Enseignants chercheurs du Muséum national d'histoire naturelle": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_Museum_TrieParCorps.html",
+    "Enseignants chercheurs du Muséum national d'histoire naturelle - prépublication": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_prepublies_Museum_TrieParCorps.html",
+    "ATER": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ATERListesOffresPubliees/ATEROffres_publiees_TriParSection.html",
+    "PRAG/PRCE": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_2nd_TrieParDiscipline.html"
+}
+
+
+all_dfs = []
+imt = download_imt("https://institutminestelecom.recruitee.com/")
+all_dfs.append(pd.DataFrame(imt))
+
+for key, url in GALAXIE_URLS.items():
+    all_dfs.append(download_galaxie(url))
 
 df = pd.concat(all_dfs)
 
@@ -73,6 +122,7 @@ short_labels = {
     "URL": "URL",
     "Profil": "Profil",
     "Article": "Article",
+    "Fiche": "Fiche"
 }
 
 labels = {
@@ -85,8 +135,9 @@ labels = {
     "Fermeture des candidatures": ["Date cl\u00f4ture cand", "DateClo.Cand."],
     "Localisation du poste": ["Localisation", "Localisation\u00a0 appel \u00e0 candidatures"],
     "URL": ["R\u00e9f\u00e9rence GALAXIE", "NAppel \u00e0candidatures"],
-    "Profil": ["Profil", "Profil\u00a0Appel \u00e0 candidatures"],
+    "Profil": ["Profil\u00a0Appel \u00e0 candidatures"],
     "Article": ["Article"],
+    "Fiche": ["Fiche"],
 }
 
 reverse_labels = {}
@@ -102,6 +153,8 @@ for columns, row in df.iterrows():
         for old_label in old_labels:
             if old_label in row and not pd.isna(row[old_label]) and row[old_label]:
                 new_row[short_labels[new_label]].add(row[old_label])
+        if new_label in row and not pd.isna(row[new_label]) and row[new_label]:
+            new_row[short_labels[new_label]].add(row[new_label])
 
     flatten_row = {}
     for label, values in new_row.items():
@@ -151,7 +204,7 @@ async def process_url(df, url):
 
 async def main(df):
     print(df.head())
-    await gather_with_concurrency(20, *[process_url(df, url) for url in df['URL']])
+    await gather_with_concurrency(20, *[process_url(df, url) for url in df[df['URL'].str.endswith('.pdf')]['URL']])
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main(df))

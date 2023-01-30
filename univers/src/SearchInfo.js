@@ -7,7 +7,7 @@ const SearchInfo = () => {
   return (
     <Container className='mt-5'>
       <Alert variant="info">
-        Ce site web permet de rechercher dans les postes et fiches de postes publiés sur Galaxie. La base de données est mise à jour toutes les 6 heures. On peut par exemple rechercher…
+        Ce site web permet de rechercher dans les postes et fiches de postes publiés sur <a href="https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/candidats.html">Galaxie</a> et sur <a href="https://institutminestelecom.recruitee.com/">le portail de recrutement de l'IMT</a>. La base de données est mise à jour toutes les 6 heures. On peut par exemple rechercher…
         <ul>
           <li>… les postes d'ATER ou de PRAG à Lyon en Informatique: PRAG ATER +Lyon +Informatique</li>
           <li>… les postes de géographie qui ne sont pas à Paris: géographie -paris</li>
@@ -17,7 +17,7 @@ const SearchInfo = () => {
       <Alert variant="warning">
         <ul>
           <li>La recherche s'effectue sur des mots complets ! Ainsi, chercher " infor " ne permettra pas de trouver " informatique ": il faut utiliser un joker et chercher " infor* " ou rechercher l'expression complète " informatique ".</li>
-          <li>Pour l'instant, seuls les postes <b>actuellement listés</b> sur Galaxie sont pris en compte dans ce moteur de recherche.</li>
+          <li>Pour l'instant, seuls les postes <b>actuellement listés</b> sur Galaxie ou sur le portail de recrutement de l'IMT sont pris en compte dans ce moteur de recherche.</li>
         </ul>
       </Alert>
       <Alert variant="primary">
