@@ -6,6 +6,7 @@ from collections import defaultdict
 import pandas as pd
 from bs4 import BeautifulSoup
 import urllib.request
+import pdfminer
 from pdfminer.high_level import extract_text_to_fp
 from pdfminer.pdfparser import PDFSyntaxError
 from nltk.corpus import stopwords 
@@ -86,6 +87,14 @@ def download_imt(url):
 
 
 stop_words = set(stopwords.words('french'))
+
+# Perform layout analysis for all text
+laparams = pdfminer.layout.LAParams()
+for param in ("all_texts", "detect_vertical", "word_margin", "char_margin", "line_margin", "boxes_flow"):
+    paramv = locals().get(param, None)
+    if paramv is not None:
+        setattr(laparams, param, paramv)
+setattr(laparams, 'all_texts', True)
 
 GALAXIE_URLS = {
     "Enseignants chercheurs": "https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/ListesPostesPublies/Emplois_publies_TrieParCorps.html",
@@ -194,7 +203,7 @@ async def process_url(df, url):
         pdf_file = BytesIO(content)
         try:
             print(url)
-            extract_text_to_fp(pdf_file, output_string)
+            extract_text_to_fp(pdf_file, output_string, laparams=laparams)
             df.loc[df['URL'] == url, ['Fiche']] = output_string.getvalue().lower()
         except PDFSyntaxError:
             print(f"Error dealing with {url}, skipping it.")
@@ -220,5 +229,5 @@ for stop_word in custom_stop_words:
 # TODO: find a better way to filter out stop words
 df['Fiche'] = df['Fiche'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 
-with open('output.json', 'w') as f:
-    f.write(df.to_json(orient='records'))
+with open('output.json', 'w', encoding='utf-8') as f:
+    f.write(df.to_json(orient='records', force_ascii=False))
