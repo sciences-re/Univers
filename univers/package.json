@@ -10,6 +10,7 @@
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "lunr": "^2.3.9",
+    "lunr-languages": "^1.10.0",
     "preval.macro": "^5.0.0",
     "query-string": "^7.0.0",
     "react": "^17.0.2",
