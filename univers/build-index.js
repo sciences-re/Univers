@@ -2,6 +2,8 @@ var lunr = require('lunr'),
 	stdin = process.stdin,
 	stdout = process.stdout,
 	buffer = []
+require("lunr-languages/lunr.stemmer.support")(lunr)
+require("lunr-languages/lunr.fr")(lunr)
 
 const columns = [
 	  { field: "Type", headerName: "Type de poste", formatter: x => x },
@@ -27,8 +29,8 @@ stdin.on('data', function (data) {
 
 stdin.on('end', function () {
 	var documents = JSON.parse(buffer.join(''))
-
 	var idx = lunr(function () {
+		this.pipeline.remove(lunr.trimmer)
 		this.pipeline.remove(lunr.stemmer)
 		this.searchPipeline.remove(lunr.stemmer)
 
