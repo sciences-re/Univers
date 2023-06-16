@@ -1,5 +1,5 @@
 {
-  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11"; };
+  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05"; };
 
   outputs = { self, nixpkgs }:
     let
@@ -10,7 +10,7 @@
               --replace "path.join(root, 'yarn.lock')" "path.join(root, 'yarn.lock')); fs.chmodSync(path.join(root, 'yarn.lock'), 0o644"
         '';
       };
-      mypython3 = pkgs.python3.withPackages (ps: with ps; [ nltk pandas pdfminer beautifulsoup4 aiohttp ]);
+      mypython3 = pkgs.python3.withPackages (ps: with ps; [ nltk pandas pdfminer lxml beautifulsoup4 aiohttp ]);
     in
     {
       devShell.x86_64-linux =

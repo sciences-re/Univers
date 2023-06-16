@@ -19,9 +19,9 @@ jobs:
           sudo locale-gen fr_FR.UTF-8
           sudo update-locale LANG=fr_FR.UTF-8
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v18
+    - uses: cachix/install-nix-action@v21
       with:
-        nix_path: nixpkgs=channel:nixos-22.11
+        nix_path: nixpkgs=channel:nixos-23.05
     - name: Install dependencies
       run: nix develop --command bash -c "cd univers && yarn install"
     - name: Fetch data
