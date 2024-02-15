@@ -60,9 +60,6 @@ def download_imt(url):
     rows = []
     for job in jobs:
         job_href = f"https://{host}/o/{job['slug']}"
-        print(job_href)
-        if not ("maitre" in job_href or "professeur" in job_href or "professor" in job_href):
-            continue
         values = {}
         values['city'] = job['city']
         values['tag'] = ", ".join(job['tags'])
@@ -81,6 +78,11 @@ def download_imt(url):
             row['Localisation du poste'] = data['jobLocation']['address']['addressLocality']
             row['Profil'] = data['title']
             row['URL'] = job_href
+
+            keywords = set(map(str.lower, ["Maître", "Maitre", "Professeur", "Professor", "associate", "conférence"]))
+            if len(keywords.intersection(set(soup.find('title').string.lower().split()))) == 0:
+                continue
+            print(job_href)
             rows.append(row)
         except AttributeError:
             print(f"Error with {job_href}")
