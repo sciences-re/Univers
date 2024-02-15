@@ -50,23 +50,25 @@ def download_imt(url):
     with urllib.request.urlopen(url) as f:
         html = f.read().decode('utf-8')
     soup = BeautifulSoup(html, features="lxml")
-    rows = []
-    job_rows = soup.find_all('a', attrs={'class': 'job__row'})
-    for job_row in job_rows:
-        job_href = urlparse(url)._replace(path=job_row['href']).geturl()
-        if not ("maitre" in job_href or "professeur" in job_href):
-            continue
-        print(job_href)
-        job_data = job_row.find('div', attrs={'class': 'job-data'})
-        keys = {'department', 'city', 'state', 'country', 'language', 'tag'}
-        values = {}
-        for key in keys:
-            values[key] = job_data.find('div', attrs={'class': key}).text.strip()
 
+    data = soup.find("div", attrs={"data-component":"PublicApp"})
+    data = json.loads(data['data-props'])
+    appConfig = data['appConfig']
+    host = appConfig['site']['host']
+    jobs = appConfig['offers']
+
+    rows = []
+    for job in jobs:
+        job_href = f"https://{host}/o/{job['slug']}"
+        print(job_href)
+        if not ("maitre" in job_href or "professeur" in job_href or "professor" in job_href):
+            continue
+        values = {}
+        values['city'] = job['city']
+        values['tag'] = ", ".join(job['tags'])
         with urllib.request.urlopen(job_href) as f:
             html = f.read().decode('utf-8')
         soup = BeautifulSoup(html, features="lxml")
-
         application_data = soup.find('script', {'type':'application/ld+json'})
         try:
             data = json.loads("".join(application_data.contents))
@@ -74,7 +76,7 @@ def download_imt(url):
             desc = BeautifulSoup(data['description'], features="lxml")
             row['Type de poste'] = "Enseignants chercheurs contractuels"
             row['Fiche'] = desc.text.lower()
-            row['Établissement'] = values['tag'].strip("[]\"")
+            row['Établissement'] = values['tag']
             row['Ouverture des candidatures'] = data['datePosted']
             row['Localisation du poste'] = data['jobLocation']['address']['addressLocality']
             row['Profil'] = data['title']
@@ -107,9 +109,8 @@ GALAXIE_URLS = {
 
 
 all_dfs = []
-imt = download_imt("https://institutminestelecom.recruitee.com/")
+imt = download_imt("https://institutminestelecom.recruitee.com/nos-offres-d-emploi")
 all_dfs.append(pd.DataFrame(imt))
-
 for key, url in GALAXIE_URLS.items():
     all_dfs.append(download_galaxie(url))
 
@@ -173,11 +174,13 @@ for columns, row in df.iterrows():
             flatten_row[label] = ", ".join(values)
     if 'URL' not in flatten_row:
         print("Error: skipping row because of missing URL")
+        print(f"Row: {row}")
         continue
     new_rows.append(flatten_row)
 
 df = pd.DataFrame(new_rows)
 df['ID'] = df.index
+df['Fiche'] = ""
 
 async def gather_with_concurrency(n, *tasks):
     semaphore = asyncio.Semaphore(n)
@@ -202,9 +205,8 @@ async def process_url(df, url):
         output_string = StringIO()
         pdf_file = BytesIO(content)
         try:
-            print(url)
             extract_text_to_fp(pdf_file, output_string, laparams=laparams)
-            df.loc[df['URL'] == url, ['Fiche']] = output_string.getvalue().lower()
+            df.loc[(df['URL'] == url), ['Fiche']] = output_string.getvalue().lower()
         except PDFSyntaxError:
             print(f"Error dealing with {url}, skipping it.")
             df.loc[df['URL'] == url, ['Fiche']] = ""
