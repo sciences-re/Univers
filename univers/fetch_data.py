@@ -194,10 +194,15 @@ async def gather_with_concurrency(n, *tasks):
 
 async def process_url(df, url):
     async with aiohttp.ClientSession() as session:
+        print(f"Fetching {url}")
         for attempt in range(0,5):
             try:
                 resp = await session.get(url)
             except aiohttp.client_exceptions.ClientConnectorError:
+                continue
+            except aiohttp.client_exceptions.ClientOSError:
+                continue
+            except aiohttp.client_exceptions.ClientPayloadError:
                 continue
             break
         else:
