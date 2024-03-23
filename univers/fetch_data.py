@@ -75,7 +75,7 @@ def download_imt(url):
             row['Fiche'] = desc.text.lower()
             row['Établissement'] = values['tag']
             row['Ouverture des candidatures'] = data['datePosted']
-            row['Localisation du poste'] = data['jobLocation']['address']['addressLocality']
+            row['Localisation du poste'] = data['jobLocation'][0]['address']['addressLocality']
             row['Profil'] = data['title']
             row['URL'] = job_href
 
